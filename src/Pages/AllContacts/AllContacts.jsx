@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllContact } from "../../Service/contact";
 import { Bars } from "react-loader-spinner";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AllContacts = () => {
-  const { isLoading, data: contacts } = useQuery({
+  const { isLoading, data: contacts,refetch } = useQuery({
     queryKey: ["contact"],
     queryFn: getAllContact,
   });
@@ -25,8 +26,36 @@ const AllContacts = () => {
     );
   }
 
+  const handleDeleteContact = (contact) => {
+    console.log(contact);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+       
+        fetch(`http://localhost:3000/contact-route/deleteContact/${contact._id}`,{
+            method : 'DELETE'
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            refetch()
+            if (data.deletedCount > 0) {
+              Swal.fire("Deleted!", "Your file has been deleted.", "success");
+            }
+          });
+      }
+    });
+
+  }
+
   return (
-    <div className="grid lg:grid-cols-4 p-12 gap-6">
+    <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 p-12 gap-6">
       {contacts?.result &&
         contacts.result.map((contact, index) => (
           <div className="border" key={index}>
@@ -49,7 +78,7 @@ const AllContacts = () => {
                <Link to={`/editContact/${contact._id}`} >  <button className="text-green-500">Edit</button></Link>
                 </li>
                 <li>
-                  <button className="text-red-500">Delete</button>
+                  <button onClick={()=> handleDeleteContact(contact)} className="text-red-500">Delete</button>
                 </li>
               </ul>
             </div>
