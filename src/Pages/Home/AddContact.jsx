@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AddContact = () => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const [address, setAddress] = useState('');
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const navigate = useNavigate();
 
@@ -29,24 +29,24 @@ const AddContact = () => {
   const uploadImageToImgBB = async (imageFile) => {
     try {
       const formData = new FormData();
-      formData.append('image', imageFile);
+      formData.append("image", imageFile);
 
       const response = await fetch(
-        'https://api.imgbb.com/1/upload?key=3175c3bd6870b807a81f5454a96c494d',
+        "https://api.imgbb.com/1/upload?key=3175c3bd6870b807a81f5454a96c494d",
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
 
       if (!response.ok) {
-        throw new Error('Image upload failed');
+        throw new Error("Image upload failed");
       }
 
       const data = await response.json();
       return data.data.url;
     } catch (error) {
-      console.error('Error uploading image:', error.message);
+      console.error("Error uploading image:", error.message);
       // Handle error (e.g., display an error message to the user)
     }
   };
@@ -63,15 +63,15 @@ const AddContact = () => {
         number,
         address,
         imageUrl,
-      
+        isFavorite: false,
       };
 
       console.log(contact);
 
-      fetch('http://localhost:3000/contact-route/createContact', {
-        method: 'POST',
+      fetch("https://contact-management-server-kappa.vercel.app/contact-route/createContact", {
+        method: "POST",
         headers: {
-          'Content-type': 'application/json',
+          "Content-type": "application/json",
         },
         body: JSON.stringify(contact),
       })
@@ -80,18 +80,18 @@ const AddContact = () => {
           form.reset();
           if (data) {
             Swal.fire({
-              position: 'top-end',
-              icon: 'success',
-              title: 'Your Contact is added',
+              position: "top-end",
+              icon: "success",
+              title: "Your Contact is added",
               showConfirmButton: false,
               timer: 1500,
             });
           }
 
-          navigate('/allContacts');
+          navigate("/allContacts");
         });
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error("Error:", error.message);
       // Handle error (e.g., display an error message to the user)
     }
   };
@@ -99,7 +99,10 @@ const AddContact = () => {
   return (
     <div>
       <section className="flex justify-center items-center p-12">
-        <form onSubmit={handlePostSubmit} className="max-w-md w-full rounded p-6 space-y-4">
+        <form
+          onSubmit={handlePostSubmit}
+          className="max-w-md w-full rounded p-6 space-y-4"
+        >
           <div className="mb-4">
             <p className="text-gray-600">Add Contact</p>
           </div>

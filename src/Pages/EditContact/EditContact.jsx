@@ -1,106 +1,108 @@
 import { useParams } from "react-router-dom";
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const EditContact = () => {
-    const {id} = useParams()
-    const [name, setName] = useState('');
-    const [number, setNumber] = useState('');
-    const [address, setAddress] = useState('');
-    const [imageFile, setImageFile] = useState(null);
-    const navigate = useNavigate();
-  
-    const handleNameChange = (e) => {
-      setName(e.target.value);
-    };
-  
-    const handleNumberChange = (e) => {
-      setNumber(e.target.value);
-    };
-  
-    const handleAddressChange = (e) => {
-      setAddress(e.target.value);
-    };
-  
-    const handleImageChange = (e) => {
-      const file = e.target.files[0];
-      setImageFile(file);
-    };
-  
-    const uploadImageToImgBB = async (imageFile) => {
-      try {
-        const formData = new FormData();
-        formData.append('image', imageFile);
-  
-        const response = await fetch(
-          'https://api.imgbb.com/1/upload?key=3175c3bd6870b807a81f5454a96c494d',
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
-  
-        if (!response.ok) {
-          throw new Error('Image upload failed');
+  const { id } = useParams();
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const navigate = useNavigate();
+
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleNumberChange = (e) => {
+    setNumber(e.target.value);
+  };
+
+  const handleAddressChange = (e) => {
+    setAddress(e.target.value);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
+
+  const uploadImageToImgBB = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const response = await fetch(
+        "https://api.imgbb.com/1/upload?key=3175c3bd6870b807a81f5454a96c494d",
+        {
+          method: "POST",
+          body: formData,
         }
-  
-        const data = await response.json();
-        return data.data.url;
-      } catch (error) {
-        console.error('Error uploading image:', error.message);
-        // Handle error (e.g., display an error message to the user)
+      );
+
+      if (!response.ok) {
+        throw new Error("Image upload failed");
       }
-    };
-  
-    const handlePostSubmit = async (e) => {
-      e.preventDefault();
-      const form = e.target;
-  
-      try {
-        const imageUrl = await uploadImageToImgBB(imageFile);
-  
-        const contact = {
-          name,
-          number,
-          address,
-          imageUrl,
-        
-        };
-  
-        console.log(contact);
-  
-        fetch(`http://localhost:3000/contact-route/updateContact/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify(contact),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            form.reset();
-            if (data) {
-              Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Your Contact is Updated',
-                showConfirmButton: false,
-                timer: 1500,
-              });
-            }
-  
-            navigate('/allContacts');
-          });
-      } catch (error) {
-        console.error('Error:', error.message);
-        // Handle error (e.g., display an error message to the user)
-      }
-    };
-    return (
-        <div>
+
+      const data = await response.json();
+      return data.data.url;
+    } catch (error) {
+      console.error("Error uploading image:", error.message);
+      // Handle error (e.g., display an error message to the user)
+    }
+  };
+
+  const handlePostSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+
+    try {
+      const imageUrl = await uploadImageToImgBB(imageFile);
+
+      const contact = {
+        name,
+        number,
+        address,
+        imageUrl,
+      };
+
+      console.log(contact);
+
+      fetch(`https://contact-management-server-kappa.vercel.app/contact-route/updateContact/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(contact),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          form.reset();
+          if (data) {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Your Contact is Updated",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+
+          navigate("/allContacts");
+        });
+    } catch (error) {
+      console.error("Error:", error.message);
+      // Handle error (e.g., display an error message to the user)
+    }
+  };
+  return (
+    <div>
       <section className="flex justify-center items-center p-12">
-        <form onSubmit={handlePostSubmit} className="max-w-md w-full rounded p-6 space-y-4">
+        <form
+          onSubmit={handlePostSubmit}
+          className="max-w-md w-full rounded p-6 space-y-4"
+        >
           <div className="mb-4">
             <p className="text-gray-600">Add Contact</p>
           </div>
@@ -152,7 +154,7 @@ const EditContact = () => {
         </form>
       </section>
     </div>
-    );
+  );
 };
 
 export default EditContact;
